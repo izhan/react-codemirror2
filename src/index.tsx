@@ -396,8 +396,7 @@ export class Controlled extends React.Component<IControlledCodeMirror, any> {
   }
 
   /** @internal */
-  private hydrate(props) {
-
+  private updateOptionsIfNeeded(props) {
     const _options = props && props.options ? props.options : {};
 
     const userDefinedOptions = Object.assign({}, cm.defaults, (this.editor as any).options, _options);
@@ -415,6 +414,10 @@ export class Controlled extends React.Component<IControlledCodeMirror, any> {
         }
       });
     }
+  }
+
+  /** @internal */
+  private hydrate(props) {
     if (!this.hydrated) {
       this.deferred ? this.resolveChange() : this.initChange(props.value || '')
     }
@@ -489,7 +492,7 @@ export class Controlled extends React.Component<IControlledCodeMirror, any> {
       }
     }
 
-    this.editor = cm(this.ref) as codemirror.Editor;
+    this.editor = cm(this.ref, this.props.options) as codemirror.Editor;
 
     this.shared = new Shared(this.editor, this.props);
 
@@ -565,6 +568,7 @@ export class Controlled extends React.Component<IControlledCodeMirror, any> {
       preserved.cursor = this.editor.getDoc().getCursor();
     }
 
+    this.updateOptionsIfNeeded(nextProps)
     this.hydrate(nextProps);
 
     if (!this.appliedNext) {
@@ -650,8 +654,7 @@ export class UnControlled extends React.Component<IUnControlledCodeMirror, any> 
   }
 
   /** @internal */
-  private hydrate(props) {
-
+  private updateOptionsIfNeeded(props) {
     const _options = props && props.options ? props.options : {};
     const userDefinedOptions = Object.assign({}, cm.defaults, (this.editor as any).options, _options);
     const optionDelta = Object.keys(userDefinedOptions).some(key => this.editor.getOption(key) !== userDefinedOptions[key]);
@@ -665,7 +668,10 @@ export class UnControlled extends React.Component<IUnControlledCodeMirror, any> 
         }
       });
     }
+  }
 
+  /** @internal */
+  private hydrate(props) {
     if (!this.hydrated) {
       const doc = this.editor.getDoc();
       const lastLine = doc.lastLine();
@@ -692,7 +698,7 @@ export class UnControlled extends React.Component<IUnControlledCodeMirror, any> 
       }
     }
 
-    this.editor = cm(this.ref) as codemirror.Editor;
+    this.editor = cm(this.ref, this.props.options) as codemirror.Editor;
 
     this.shared = new Shared(this.editor, this.props);
 
@@ -766,6 +772,7 @@ export class UnControlled extends React.Component<IUnControlledCodeMirror, any> 
       preserved.cursor = this.editor.getDoc().getCursor();
     }
 
+    this.updateOptionsIfNeeded(nextProps)
     this.hydrate(nextProps);
 
     if (!this.applied) {

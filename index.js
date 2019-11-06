@@ -404,7 +404,7 @@ var Controlled = function(_super) {
     return _this;
   }
 
-  Controlled.prototype.hydrate = function(props) {
+  Controlled.prototype.updateOptionsIfNeeded = function(props) {
     var _this = this;
 
     var _options = props && props.options ? props.options : {};
@@ -426,7 +426,9 @@ var Controlled = function(_super) {
         }
       });
     }
+  };
 
+  Controlled.prototype.hydrate = function(props) {
     if (!this.hydrated) {
       this.deferred ? this.resolveChange() : this.initChange(props.value || '');
     }
@@ -495,7 +497,7 @@ var Controlled = function(_super) {
       }
     }
 
-    this.editor = cm(this.ref);
+    this.editor = cm(this.ref, this.props.options);
     this.shared = new Shared(this.editor, this.props);
     this.mirror = cm(function() {});
     this.editor.on('electricInput', function() {
@@ -554,6 +556,7 @@ var Controlled = function(_super) {
       preserved.cursor = this.editor.getDoc().getCursor();
     }
 
+    this.updateOptionsIfNeeded(nextProps);
     this.hydrate(nextProps);
 
     if (!this.appliedNext) {
@@ -623,7 +626,7 @@ var UnControlled = function(_super) {
     return _this;
   }
 
-  UnControlled.prototype.hydrate = function(props) {
+  UnControlled.prototype.updateOptionsIfNeeded = function(props) {
     var _this = this;
 
     var _options = props && props.options ? props.options : {};
@@ -643,7 +646,9 @@ var UnControlled = function(_super) {
         }
       });
     }
+  };
 
+  UnControlled.prototype.hydrate = function(props) {
     if (!this.hydrated) {
       var doc = this.editor.getDoc();
       var lastLine = doc.lastLine();
@@ -672,7 +677,7 @@ var UnControlled = function(_super) {
       }
     }
 
-    this.editor = cm(this.ref);
+    this.editor = cm(this.ref, this.props.options);
     this.shared = new Shared(this.editor, this.props);
     this.editor.on('beforeChange', function(cm, data) {
       if (_this.props.onBeforeChange) {
@@ -736,6 +741,7 @@ var UnControlled = function(_super) {
       preserved.cursor = this.editor.getDoc().getCursor();
     }
 
+    this.updateOptionsIfNeeded(nextProps);
     this.hydrate(nextProps);
 
     if (!this.applied) {

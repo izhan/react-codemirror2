@@ -279,7 +279,7 @@ var Controlled = (function (_super) {
         _this.mounted = false;
         return _this;
     }
-    Controlled.prototype.hydrate = function (props) {
+    Controlled.prototype.updateOptionsIfNeeded = function (props) {
         var _this = this;
         var _options = props && props.options ? props.options : {};
         var userDefinedOptions = Object.assign({}, cm.defaults, this.editor.options, _options);
@@ -294,6 +294,8 @@ var Controlled = (function (_super) {
                 }
             });
         }
+    };
+    Controlled.prototype.hydrate = function (props) {
         if (!this.hydrated) {
             this.deferred ? this.resolveChange() : this.initChange(props.value || '');
         }
@@ -349,7 +351,7 @@ var Controlled = (function (_super) {
                 cm.defineMode(this.props.defineMode.name, this.props.defineMode.fn);
             }
         }
-        this.editor = cm(this.ref);
+        this.editor = cm(this.ref, this.props.options);
         this.shared = new Shared(this.editor, this.props);
         this.mirror = cm(function () {
         });
@@ -399,6 +401,7 @@ var Controlled = (function (_super) {
         if (!this.props.autoCursor && this.props.autoCursor !== undefined) {
             preserved.cursor = this.editor.getDoc().getCursor();
         }
+        this.updateOptionsIfNeeded(nextProps);
         this.hydrate(nextProps);
         if (!this.appliedNext) {
             this.shared.applyNext(this.props, nextProps, preserved);
@@ -449,7 +452,7 @@ var UnControlled = (function (_super) {
         };
         return _this;
     }
-    UnControlled.prototype.hydrate = function (props) {
+    UnControlled.prototype.updateOptionsIfNeeded = function (props) {
         var _this = this;
         var _options = props && props.options ? props.options : {};
         var userDefinedOptions = Object.assign({}, cm.defaults, this.editor.options, _options);
@@ -463,6 +466,8 @@ var UnControlled = (function (_super) {
                 }
             });
         }
+    };
+    UnControlled.prototype.hydrate = function (props) {
         if (!this.hydrated) {
             var doc = this.editor.getDoc();
             var lastLine = doc.lastLine();
@@ -481,7 +486,7 @@ var UnControlled = (function (_super) {
                 cm.defineMode(this.props.defineMode.name, this.props.defineMode.fn);
             }
         }
-        this.editor = cm(this.ref);
+        this.editor = cm(this.ref, this.props.options);
         this.shared = new Shared(this.editor, this.props);
         this.editor.on('beforeChange', function (cm, data) {
             if (_this.props.onBeforeChange) {
@@ -535,6 +540,7 @@ var UnControlled = (function (_super) {
         if (!this.props.autoCursor && this.props.autoCursor !== undefined) {
             preserved.cursor = this.editor.getDoc().getCursor();
         }
+        this.updateOptionsIfNeeded(nextProps);
         this.hydrate(nextProps);
         if (!this.applied) {
             this.shared.apply(this.props);
